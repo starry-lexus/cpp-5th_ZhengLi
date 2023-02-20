@@ -1,0 +1,13 @@
+下载地址：
+①https://github.com/niXman/mingw-builds-binaries/releases
+②www.winlibs.com
+这里面文件较多，以x86_x64-12.2.0-release-win32-seh-ucrt-rt_v10-rev2.7z为例，将文件名依次分为5部分
+①处理器架构：i686是32位处理，x86_x64为64位处理器
+②编译器版本：12.2.0
+③文件性质：release为发行版（二进制）
+④线程模式：win32/posix
+⑤运行时库：UCRT是标准C运行时库，MSVCRT是微软Visual Studio编译器运行时库（微软自己都放弃了）
+
+POSIX（Portable Operating System Interface of UNIX）标准：这是IEEE委员会制定的用以规划范Unix系统的标准，
+Linux和Mac（UNIX-base）都支持，微软表示自己也支持（在https://learn.microsoft.com/zh-cn上搜索POSIX即可找到）
+seh（Structed Exception Handling）

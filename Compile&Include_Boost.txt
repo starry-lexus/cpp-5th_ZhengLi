@@ -1,0 +1,118 @@
+说明:
+操作系统：基于x64架构的Windows 10
+IDE：CLion 2022.3.2/Visual Studio 2022
+编译器：MSVC 14.3 （对应Visual Studio 2022）/MinGW 12.2.0
+一、下载并解压Boost库
+1.官网：www.boost.org
+  ①截止2023年2月12日，boost的最新版本为1.81.0
+  ②请使用浏览器内置下载器下载库文件，否则文件下载到40% ~ 90%时就会因hash值未验证而失败
+2.解压：例如将其解压到D盘根目录下，并将boost_18_0文件夹修改为Boost，最终Boost库的目录为D:\Boost
+二、编译Boost库
+必须单独构建的Boost库：
+Boost.Chrono
+Boost.Context
+Boost.Filesystem
+Boost.GraphParallel
+Boost.IOStreams
+Boost.Locale
+Boost.Log (see build documentation)
+Boost.MPI
+Boost.ProgramOptions
+Boost.Python (see the Boost.Python build documentation before building and installing it)
+Boost.Regex
+Boost.Serialization
+Boost.Thread
+Boost.Timer
+Boost.Wave
+一些库具有可选的单独编译的二进制文件：
+Boost.Graph also has a binary component that is only needed if you intend to parse GraphViz files.
+Boost.Math has binary components for the TR1 and C99 cmath functions.
+Boost.Random has a binary component which is only needed if you're using random_device.
+Boost.Test can be used in “header-only” or “separately compiled” mode, although separate compilation is recommended for serious use.
+Boost.Exception provides non-intrusive implementation of exception_ptr for 32-bit _MSC_VER==1310 and _MSC_VER==1400 which requires a separately-compiled binary. This is enabled by #define BOOST_ENABLE_NON_INTRUSIVE_EXCEPTION_PTR.
+Boost.System is header-only since Boost 1.69. A stub library is still built for compatibility, but linking to it is no longer necessary.
+1.打开x64 Native Tools Command Prompt for VS 2022或Developer Command Prompt for VS 2022
+2.编译Boost库（使用MSVC)
+cd /d D:\Boost      //bootstrap.bat跳转到所在目录：若VS 2022或MSVC 14.3与Boost在同一个盘,则删除/d
+bootstrap.bat       //进行库引导
+b2 stage --toolset=msvc-14.3 --without-python --build-type=minimal --stagedir="D:\Boost\vc_14_3" link=static runtime-link=shared threading=multi address-model=64 debug release
+
+编译Boost库（使用MinGW)
+cd /d D:\Boost
+bootstrap.bat gcc
+b2 stage --toolset=gcc --without-python --build-type=minimal --stagedir="D:\Boost\gcc_12_2_0" link=static runtime-link=shared threading=multi address-model=64 debug release   //用MinGW编译
+
+//最后一条命令运行结束后，boost会告诉你头文件目录和库文件目录，所以先别急着关闭窗口
+/********************************分析最后一条命令的参数*************************************************************
+1.b2：bootstrap.bat运行结束后会在Boost目录中生成b2.exe和project-config.jam两个文件，b2.exe就是用来编译库的
+2.stage/install：stage只会生成库（dll和lib），install还会生成包含头文件的include目录。推荐使用stage，因为
+install生成的include目录实际就是boost安装包解压缩后的boost目录（D:\Boost\boost，比include目录多几个非常小的非hpp文件），
+所以可以直接使用，而且不同的IDE都可以使用同一套头文件，这样既节省编译时间，也节省硬盘空间。
+3.toolset：指定编译器，可选acc较新版本、borland、como（使用此工具集可能需要配置另一个工具集作为其后端）、darwin（苹果版gcc）、
+gcc（包括Cygwin和MinGW）、hp_cxx、intel、msvc、sun和vacpp
+4.without/with：不编译/编译那些库，由于本人用不到Python，所以不编译它，如果需要编译某语言版本，则需要相关支持
+5.build-type=minimal/complete：建议使用默认值minima，编出所有可能的版本的话，MinGW就得运行好几个小时
+6.stagedir/prefix：表示编译生成文件的路径。【注：若之前填的是stage，则使用stagedir，否则就使用prefix，建议给编译器指定的目录】
+7.link=shared/static：生成动态/静态链接库,建议使用CLion+MSVC/MinGW的选择static，否则在用serialization等库的时候会发生错误
+8.runtime-link=shared/static：生成动态/静态运行时库。【注：不能出现link=shared且runtime-link=static的情况】
+9.threading=single/multi：单/多线程编译.一般写的都是多线程程序
+10.address-model=32/64：地址编码位数
+11.debug/release：编译版本.一般两个都需要编译
+还有一个参数没用
+build-dir：指定编译迁建生成的中间文件的路径。默认就在根目录（D:\Boost\）下，目录名为bin.v2，编译完成后可直接删除。
+****************************************************************************************************************/
+三、导入Boost库
+1.Visual Studio 2022
+项目属性-->配置属性-->VC++目录：包含目录为D:\Boost，库目录为D:\Boost\vc14_3\lib
+项目属性-->配置属性-->链接器：附加库目录为D:\Boost\vc14_3\lib
+2.CLion 2022.3.2
+编写CMakeLists.txt：具体写法见该文件，内涵注释
+四、使用方法
+导入hpp文件，例如下面两个例子
+①直接使用
+//example.cpp，假设编译后为example.exe
+#include <boost/lambda/lambda.hpp>
+#include <iostream>
+#include <iterator>
+#include <algorithm>
+
+int main()
+{
+    using namespace boost::lambda;
+    typedef std::istream_iterator<int> in;
+
+    std::for_each(
+        in(std::cin), in(), std::cout << (_1 * 3) << " " );
+}
+②必须在编译后才能使用的库
+//example.cpp，假设编译后为example.exe，其所在目录为F:\C++\ZhengLi\cmake-build-debug
+#include <boost/regex.hpp>      //正则表达式库
+#include <iostream>
+#include <string>
+
+int main()
+{   //从电子邮件中提取出主题行
+    std::string line;
+    boost::regex pat( "^Subject: (Re: |Aw: )*(.*)" );
+
+    while (std::cin)
+    {
+        std::getline(std::cin, line);
+        boost::smatch matches;
+        if (boost::regex_match(line, matches, pat))
+            std::cout << matches[2] << std::endl;
+    }
+}
+
+//jayne.txt，假设其所在目录为F:\C++\ZhengLi
+To: George Shmidlap
+From: Rita Marlowe
+Subject: Will Success Spoil Rock Hunter?
+---
+See subject.
+
+//在cmd中运行，假设cmd已跳转到F:\C++\ZhengLi\cmake-build-debug
+example < ../jayne.txt
+
+//输出结果应该是
+Will Success Spoil Rock Hunter?

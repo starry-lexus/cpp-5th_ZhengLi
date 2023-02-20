@@ -1,0 +1,37 @@
+1 cmake_minimum_required(VERSION 3.24)            #cmake最低版本要求
+2 
+3 project(ZhengLi)                                #设置项目名称（也可以先声明项目变量，然后填入变量）
+4 aux_source_directory(. DIR_SRCS)                #将当前目录下的所有源文件的名字保存到变量DIR_SRCS
+5 add_executable(ZhengLi ${DIR_SRCS})             #为整个项目导入Boost库
+6 
+7 set(CMAKE_CXX_STANDARD 14)                      #设置编译版本
+8 
+9 set(BOOST_ROOT D:/Boost)                        #设置Boost库根目录变量
+10 set(Boost_INCLUDE_DIR D:/Boost)                 #设置头文件搜索路径变量（系统将在D:\Boost\boost中搜索）
+11 set(Boost_LIBRARY_DIR D:/Boost/vc_14_3/lib)     #设置库文件搜索路径变量
+12 set(Boost_USE_SHARED_LIBS ON)                   #启用动态库
+13 set(Boost_USE_SHARED_RUNTIME ON)                #启用动态链接
+14 set(Boost_USE_MULTITHREAD ON)                   #启用多线程
+15 
+16 include_directories(${Boost_INCLUDE_DIR})       #头文件搜索路径
+17 link_directories(${Boost_LIBRARY_DIR})          #库文件搜索路径
+18 target_link_libraries(ZhengLi boost_thread boost_system)
+19 
+20 add_executable(t1 7_6.cpp)
+21 add_executable(t2 7_8.cpp)
+22 add_executable(t3 mySort.cpp)
+23 add_executable(t4 IncrementIterator.cpp)
+24 add_executable(t5 getElapsedTime.cpp)
+25 add_executable(t10_17_2and3 10_18.cpp)
+26 add_executable(t10_17_4 10_10.cpp)
+27 add_executable(c3 Chapter3.cpp)
+28 add_executable(c4 Chapter4.cpp)
+29 add_executable(c5 Chapter5.cpp)
+30 add_executable(c6 Chapter6.cpp)
+31 add_executable(c7 Chapter7.cpp)
+32 add_executable(c8 Chapter8.cpp)
+33 add_executable(c9 Chapter9.cpp)
+34 add_executable(c9_5 9_5answer.cpp)
+35 add_executable(c9_6 9_6answer.cpp)
+36 add_executable(c10 Chapter10.cpp)
+37 add_executable(c11 Chapter11.cpp)

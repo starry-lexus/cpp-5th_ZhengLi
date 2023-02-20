@@ -1,0 +1,240 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Release-d0094a50bb2071803777.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.24"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20
+					]
+				}
+			],
+			"name" : "Release",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "ZhengLi",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17,
+						18,
+						19,
+						20
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ZhengLi::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ZhengLi-Release-c4346e5d636201a77a60.json",
+					"name" : "ZhengLi",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "c10::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-c10-Release-dc41f3afd753a50f1b79.json",
+					"name" : "c10",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "c11::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-c11-Release-0e8b27fdbe7cbb8dd395.json",
+					"name" : "c11",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "c12::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-c12-Release-89aac519d5606b9fbc1f.json",
+					"name" : "c12",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "c3::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-c3-Release-668e8fd9b7a3d74c1ca9.json",
+					"name" : "c3",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "c4::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-c4-Release-7679e94b361dc812ea3b.json",
+					"name" : "c4",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "c5::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-c5-Release-b01b02fd561fc210a88a.json",
+					"name" : "c5",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "c6::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-c6-Release-fdcc57051f6bdd57e303.json",
+					"name" : "c6",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "c7::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-c7-Release-dcf3b3ad33abaa4b5b57.json",
+					"name" : "c7",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "c8::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-c8-Release-87a68cc193e8f8076635.json",
+					"name" : "c8",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "c9::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-c9-Release-69c6d19e1efabf9cb285.json",
+					"name" : "c9",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "c9_5::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-c9_5-Release-b99a38a80db3c2f63bb8.json",
+					"name" : "c9_5",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "c9_6::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-c9_6-Release-6f02fba6f89d56683aaf.json",
+					"name" : "c9_6",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "t1::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-t1-Release-1ec692700153e6a1bac5.json",
+					"name" : "t1",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "t10_17_2and3::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-t10_17_2and3-Release-cabe9e4ba6c24f3fd072.json",
+					"name" : "t10_17_2and3",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "t10_17_4::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-t10_17_4-Release-6b01c24240242df63dc2.json",
+					"name" : "t10_17_4",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "t11_11::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-t11_11-Release-7f29614794835aa03812.json",
+					"name" : "t11_11",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "t2::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-t2-Release-5b30add468b692a9f83e.json",
+					"name" : "t2",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "t3::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-t3-Release-75e147c77505db289e19.json",
+					"name" : "t3",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "t4::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-t4-Release-25e1dc638421c5705dad.json",
+					"name" : "t4",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "t5::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-t5-Release-0f2652e55ef189ccc6de.json",
+					"name" : "t5",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "F:/C++/ZhengLi/cmake-build-release",
+		"source" : "F:/C++/ZhengLi"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 4
+	}
+}

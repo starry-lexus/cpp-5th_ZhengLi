@@ -1,0 +1,57 @@
+Performing C SOURCE FILE Test CMAKE_HAVE_LIBC_PTHREAD failed with the following output:
+Change Dir: F:/C++/ZhengLi/cmake-build-release/CMakeFiles/CMakeTmp
+
+Run Build Command(s):D:/CLion 2020.2.4/bin/ninja/win/x64/ninja.exe cmTC_efc4e && [1/2] Building C object CMakeFiles\cmTC_efc4e.dir\src.c.obj
+FAILED: CMakeFiles/cmTC_efc4e.dir/src.c.obj 
+"H:\Microsoft Visual Studio 2022\Community\VC\Tools\MSVC\14.34.31933\bin\Hostx64\x64\cl.exe"  /nologo -DCMAKE_HAVE_LIBC_PTHREAD  /DWIN32 /D_WINDOWS  /Zi /Ob0 /Od /RTC1 -MDd /showIncludes /FoCMakeFiles\cmTC_efc4e.dir\src.c.obj /FdCMakeFiles\cmTC_efc4e.dir\ /FS -c F:\C++\ZhengLi\cmake-build-release\CMakeFiles\CMakeTmp\src.c
+F:\C++\ZhengLi\cmake-build-release\CMakeFiles\CMakeTmp\src.c(1): fatal error C1083: 无法打开包括文件: “pthread.h”: No such file or directory
+ninja: build stopped: subcommand failed.
+
+
+Source file was:
+#include <pthread.h>
+
+static void* test_func(void* data)
+{
+  return data;
+}
+
+int main(void)
+{
+  pthread_t thread;
+  pthread_create(&thread, NULL, test_func, NULL);
+  pthread_detach(thread);
+  pthread_cancel(thread);
+  pthread_join(thread, NULL);
+  pthread_atfork(NULL, NULL, NULL);
+  pthread_exit(NULL);
+
+  return 0;
+}
+
+Determining if the function pthread_create exists in the pthreads failed with the following output:
+Change Dir: F:/C++/ZhengLi/cmake-build-release/CMakeFiles/CMakeTmp
+
+Run Build Command(s):D:/CLion 2020.2.4/bin/ninja/win/x64/ninja.exe cmTC_fb701 && [1/2] Building C object CMakeFiles\cmTC_fb701.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_fb701.exe
+FAILED: cmTC_fb701.exe 
+cmd.exe /C "cd . && "D:\CLion 2020.2.4\bin\cmake\win\x64\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_fb701.dir --rc="C:\PROGRA~2\Windows Kits\10\bin\10.0.22000.0\x64\rc.exe" --mt="C:\PROGRA~2\Windows Kits\10\bin\10.0.22000.0\x64\mt.exe" --manifests  -- "H:\Microsoft Visual Studio 2022\Community\VC\Tools\MSVC\14.34.31933\bin\Hostx64\x64\link.exe" /nologo CMakeFiles\cmTC_fb701.dir\CheckFunctionExists.c.obj  /out:cmTC_fb701.exe /implib:cmTC_fb701.lib /pdb:cmTC_fb701.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  pthreads.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "H:\Microsoft Visual Studio 2022\Community\VC\Tools\MSVC\14.34.31933\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_fb701.dir\CheckFunctionExists.c.obj /out:cmTC_fb701.exe /implib:cmTC_fb701.lib /pdb:cmTC_fb701.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_fb701.dir/intermediate.manifest CMakeFiles\cmTC_fb701.dir/manifest.res" failed (exit code 1104) with the following output:
+LINK : fatal error LNK1104: 无法打开文件“pthreads.lib”
+ninja: build stopped: subcommand failed.
+
+
+
+Determining if the function pthread_create exists in the pthread failed with the following output:
+Change Dir: F:/C++/ZhengLi/cmake-build-release/CMakeFiles/CMakeTmp
+
+Run Build Command(s):D:/CLion 2020.2.4/bin/ninja/win/x64/ninja.exe cmTC_1331a && [1/2] Building C object CMakeFiles\cmTC_1331a.dir\CheckFunctionExists.c.obj
+[2/2] Linking C executable cmTC_1331a.exe
+FAILED: cmTC_1331a.exe 
+cmd.exe /C "cd . && "D:\CLion 2020.2.4\bin\cmake\win\x64\bin\cmake.exe" -E vs_link_exe --intdir=CMakeFiles\cmTC_1331a.dir --rc="C:\PROGRA~2\Windows Kits\10\bin\10.0.22000.0\x64\rc.exe" --mt="C:\PROGRA~2\Windows Kits\10\bin\10.0.22000.0\x64\mt.exe" --manifests  -- "H:\Microsoft Visual Studio 2022\Community\VC\Tools\MSVC\14.34.31933\bin\Hostx64\x64\link.exe" /nologo CMakeFiles\cmTC_1331a.dir\CheckFunctionExists.c.obj  /out:cmTC_1331a.exe /implib:cmTC_1331a.lib /pdb:cmTC_1331a.pdb /version:0.0 /machine:x64  /debug /INCREMENTAL /subsystem:console  pthread.lib  kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib && cd ."
+LINK Pass 1: command "H:\Microsoft Visual Studio 2022\Community\VC\Tools\MSVC\14.34.31933\bin\Hostx64\x64\link.exe /nologo CMakeFiles\cmTC_1331a.dir\CheckFunctionExists.c.obj /out:cmTC_1331a.exe /implib:cmTC_1331a.lib /pdb:cmTC_1331a.pdb /version:0.0 /machine:x64 /debug /INCREMENTAL /subsystem:console pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTFILE:CMakeFiles\cmTC_1331a.dir/intermediate.manifest CMakeFiles\cmTC_1331a.dir/manifest.res" failed (exit code 1104) with the following output:
+LINK : fatal error LNK1104: 无法打开文件“pthread.lib”
+ninja: build stopped: subcommand failed.
+
+
+
