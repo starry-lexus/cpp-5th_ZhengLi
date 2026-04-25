@@ -146,6 +146,7 @@ class MetadataAnalyzerApp(ft.Container):
         self.models: set[str] = set(DEFAULT_MODELS)
         self.local_models: set[str] = set()
         self.current_headers: list[str] = []
+        self.dynamic_field_error = ""
 
         self.file_picker = ft.FilePicker(on_result=self._on_file_picked)
         self.pick_target: str | None = None
@@ -188,6 +189,7 @@ class MetadataAnalyzerApp(ft.Container):
         self.output_tf = ft.TextField(label="输出表格", expand=True, on_change=lambda _: self.validate_all())
         self.output_browse = ft.ElevatedButton("浏览", on_click=lambda _: self.pick_file("output"))
         self.output_err = ft.Text("", color=ft.Colors.RED_600, size=12)
+        self.output_hint = ft.Text("", color=ft.Colors.BLUE_700, size=12)
 
         self.extra_fields = MultiSelectPanel("额外字段")
 
@@ -201,11 +203,13 @@ class MetadataAnalyzerApp(ft.Container):
 
         # 页面1：字段配置
         self.dynamic_fields_col = ft.Column(spacing=8)
+        self.dynamic_field_err_text = ft.Text("", color=ft.Colors.RED_600, size=12)
         self.add_field_btn = ft.OutlinedButton("添加字段", icon=ft.Icons.ADD, on_click=lambda _: self.add_dynamic_field_row())
         self.page1 = ft.Column(
             controls=[
                 ft.Row([ft.Text("页面1：字段定义", size=20, weight=ft.FontWeight.BOLD), self.add_field_btn]),
                 self.dynamic_fields_col,
+                self.dynamic_field_err_text,
             ],
             spacing=10,
             scroll=ft.ScrollMode.AUTO,
@@ -259,6 +263,7 @@ class MetadataAnalyzerApp(ft.Container):
                     self.analyze_fields,
                     ft.Row([self.output_tf, self.output_browse]),
                     self.output_err,
+                    self.output_hint,
                     self.extra_fields,
                     ft.Divider(),
                     ft.Text("EasyScholar 配置", size=18, weight=ft.FontWeight.BOLD),
@@ -295,9 +300,42 @@ class MetadataAnalyzerApp(ft.Container):
             self.update()
 
     def reset_all(self):
-        self.page.clean()
-        self.__init__(self.page)
-        self.page.add(self)
+        self.is_analyzing = False
+        self.model_custom_hint.value = ""
+        self.model_pull_pb.visible = False
+        self.model_pull_text.value = ""
+        self.think_switch.value = False
+        self.show_thinking_switch.value = False
+        self.think_depth.value = "medium"
+        self.temp_tf.value = "0.0"
+        self.concurrent_slider.value = 1
+        self.context_dd.value = "256K"
+        self.input_tf.value = ""
+        self.output_tf.value = ""
+        self.current_headers = []
+        self.input_err.value = ""
+        self.output_err.value = ""
+        self.output_hint.value = ""
+        self.read_fields.set_options([], keep_selected=False)
+        self.analyze_fields.set_options([], keep_selected=False)
+        self.extra_fields.set_options([], keep_selected=False)
+        self.easyscholar_key.value = ""
+        self.journal_col_dd.options = []
+        self.journal_col_dd.value = None
+        self.system_prompt.value = LANGUAGE_CONFIG
+        self.user_prompt.value = ""
+        self.dynamic_fields_col.controls.clear()
+        self.add_dynamic_field_row()
+        self.page1.visible = True
+        self.page2.visible = False
+        self.analysis_pb.value = 0
+        self.analysis_status.value = "未开始"
+        self.token_text.value = "Token 消费：prompt=0, completion=0"
+        self.thinking_text.value = ""
+        self.model_output_text.value = ""
+        self.refresh_models()
+        self.validate_all()
+        self.update()
 
     def refresh_models(self):
         try:
@@ -324,7 +362,7 @@ class MetadataAnalyzerApp(ft.Container):
         if m in self.local_models:
             self.model_action_btn.icon = ft.Icons.DELETE_OUTLINE
             self.model_action_btn.tooltip = "删除本地模型"
-        elif m.endswith(":cloud") or m.endswith("cloud"):
+        elif m.endswith(":cloud"):
             self.model_action_btn.icon = ft.Icons.CLOUD_DOWNLOAD
             self.model_action_btn.tooltip = "使用云端模型"
         else:
@@ -371,30 +409,29 @@ class MetadataAnalyzerApp(ft.Container):
         self.model_pull_text.value = f"正在拉取模型：{model_name}"
         self.update()
 
-        def _pull_sync():
-            progress = 0.0
-            try:
-                for part in ollama.pull(model_name, stream=True):
-                    total = part.get("total") or 0
-                    completed = part.get("completed") or 0
-                    status = part.get("status") or ""
-                    if total:
-                        progress = min(1.0, completed / total)
-                    yield progress, status
-                yield 1.0, "done"
-            except Exception as e:
-                yield -1.0, str(e)
-
-        for prog, status in await asyncio.to_thread(lambda: list(_pull_sync())):
-            if prog >= 0:
+        try:
+            iterator = ollama.pull(model_name, stream=True)
+            while True:
+                part = await asyncio.wait_for(asyncio.to_thread(next, iterator, None), timeout=60)
+                if part is None:
+                    break
+                total = part.get("total") or 0
+                completed = part.get("completed") or 0
+                status = part.get("status") or ""
+                prog = min(1.0, completed / total) if total else None
                 self.model_pull_pb.value = prog
-                self.model_pull_text.value = f"拉取中 {prog:.0%} {status}"
-            else:
-                self.model_pull_pb.visible = False
-                self.model_pull_text.value = f"无效的模型名，请从 https://ollama.com/search 复制模型名。错误：{status}"
+                self.model_pull_text.value = f"拉取中 {f'{prog:.0%}' if isinstance(prog, float) else ''} {status}".strip()
                 self.update()
-                return
+        except asyncio.TimeoutError:
+            self.model_pull_pb.visible = False
+            self.model_pull_text.value = "拉取超时，请检查网络连接后重试。"
             self.update()
+            return
+        except Exception as e:
+            self.model_pull_pb.visible = False
+            self.model_pull_text.value = f"无效的模型名，请从 https://ollama.com/search 复制模型名。错误：{e}"
+            self.update()
+            return
 
         self.model_pull_pb.visible = False
         self.model_pull_text.value = f"模型拉取成功：{model_name}"
@@ -500,18 +537,23 @@ class MetadataAnalyzerApp(ft.Container):
     def _get_dynamic_result_model(self) -> type[BaseModel] | None:
         fields: dict[str, tuple[type, Any]] = {}
         used_names = set()
+        self.dynamic_field_error = ""
         for row in self.dynamic_fields_col.controls:
             if not isinstance(row, ResultFieldRow):
                 continue
             f = row.to_dynamic_field()
             if not f:
+                self.dynamic_field_error = "字段名必须为合法标识符（字母/下划线开头，仅含字母数字下划线）。"
                 continue
             if f.name in used_names:
+                self.dynamic_field_error = f"字段名重复：{f.name}"
                 return None
             used_names.add(f.name)
             py_t = TYPE_MAP[f.type_name]
             fields[f.name] = (py_t, Field(..., description=f.description or f.name))
         if not fields:
+            if not self.dynamic_field_error:
+                self.dynamic_field_error = "请至少添加一个有效输出字段。"
             return None
         return create_model("Result", **fields)
 
@@ -526,11 +568,17 @@ class MetadataAnalyzerApp(ft.Container):
         self.input_tf.border_color = None if in_ok else ft.Colors.RED
         self.output_err.value = "" if out_ok else out_msg
         self.output_tf.border_color = None if out_ok else ft.Colors.RED
+        out_suffix = Path((self.output_tf.value or "").strip()).suffix.lower()
+        if out_ok and out_suffix in {".xls", ".xlsx"}:
+            self.output_hint.value = "分析过程中为保证崩溃可恢复的追加写入, Excel 目标不会生成 .xlsx, 而是直接产出同名 .csv 文件。"
+        else:
+            self.output_hint.value = ""
 
         self.read_fields.set_invalid(len(self.read_fields.selected) == 0)
         self.analyze_fields.set_invalid(len(self.analyze_fields.selected) == 0)
 
         has_schema = self._get_dynamic_result_model() is not None
+        self.dynamic_field_err_text.value = self.dynamic_field_error
         system_ok = bool((self.system_prompt.value or "").strip())
         user_ok = bool((self.user_prompt.value or "").strip())
         model_ok = bool((self.model_dd.value or "").strip())
@@ -570,8 +618,8 @@ class MetadataAnalyzerApp(ft.Container):
             )
             raw = (response.message.content or "").strip()
             meta = {
-                "prompt_eval_count": response.get("prompt_eval_count", 0),
-                "eval_count": response.get("eval_count", 0),
+                "prompt_eval_count": getattr(response, "prompt_eval_count", None) or 0,
+                "eval_count": getattr(response, "eval_count", None) or 0,
                 "thinking": getattr(response.message, "thinking", "") if hasattr(response, "message") else "",
                 "raw": raw,
             }
@@ -579,9 +627,12 @@ class MetadataAnalyzerApp(ft.Container):
                 return result_model.model_validate_json(raw), meta
             except ValidationError:
                 pass
-            raw2 = re.sub(r"^```(?:json)?\\s*|\\s*```$", "", raw, flags=re.IGNORECASE | re.DOTALL).strip()
-            data = json.loads(raw2)
-            return result_model.model_validate(data), meta
+            raw2 = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw, flags=re.IGNORECASE | re.DOTALL).strip()
+            try:
+                data = json.loads(raw2)
+                return result_model.model_validate(data), meta
+            except Exception as pe:
+                return None, {**meta, "error": f"解析结构化输出失败：{pe}"}
         except ResponseError as e:
             return None, {"error": f"ResponseError: {e}"}
         except Exception as e:
@@ -649,10 +700,11 @@ class MetadataAnalyzerApp(ft.Container):
         completion_tokens = 0
         header_written = output_path.exists() and output_path.stat().st_size > 0
 
-        async def worker(row_idx: int, row: pd.Series):
+        async def worker(row_values: tuple[Any, ...]):
             nonlocal done, prompt_tokens, completion_tokens, header_written
             async with sem:
-                row_dict = {k: row.get(k, "") for k in analyze_cols}
+                row_map = dict(zip(read_cols, row_values))
+                row_dict = {k: row_map.get(k, "") for k in analyze_cols}
                 safe_map = {k: ("" if pd.isna(v) else str(v)) for k, v in row_dict.items()}
                 try:
                     user_content = prompt_template.format(**safe_map)
@@ -686,19 +738,20 @@ class MetadataAnalyzerApp(ft.Container):
 
                     out_obj = {**payload}
                     for c in extra_cols:
-                        out_obj[c] = row.get(c, None)
+                        out_obj[c] = row_map.get(c, None)
 
                     out_df = pd.DataFrame([out_obj])
+                    header_needed = not header_written
                     if output_path.suffix.lower() == ".csv":
-                        out_df.to_csv(output_path, mode="a", index=False, header=not header_written, encoding="utf-8-sig")
+                        out_df.to_csv(output_path, mode="a", index=False, header=header_needed, encoding="utf-8-sig")
                     else:
-                        # xls/xlsx 统一追加到 csv 旁路文件，保证追加安全
+                        # 为保证崩溃恢复能力，xls/xlsx 目标路径采用同名 csv 追加写入
                         fallback = output_path.with_suffix(".csv")
-                        out_df.to_csv(fallback, mode="a", index=False, header=not fallback.exists(), encoding="utf-8-sig")
+                        out_df.to_csv(fallback, mode="a", index=False, header=header_needed, encoding="utf-8-sig")
                     header_written = True
 
-                    prompt_tokens += int(meta.get("prompt_eval_count", 0) or 0)
-                    completion_tokens += int(meta.get("eval_count", 0) or 0)
+                    prompt_tokens += meta.get("prompt_eval_count", 0)
+                    completion_tokens += meta.get("eval_count", 0)
                     self.token_text.value = f"Token 消费：prompt={prompt_tokens}, completion={completion_tokens}"
 
                     if self.show_thinking_switch.value:
@@ -708,8 +761,16 @@ class MetadataAnalyzerApp(ft.Container):
                     self.model_output_text.value = str(meta.get("raw", "") or meta.get("error", ""))
                     self.update()
 
-        tasks = [asyncio.create_task(worker(i, row)) for i, row in df.iterrows()]
-        await asyncio.gather(*tasks, return_exceptions=True)
+        active_tasks: set[asyncio.Task] = set()
+        window = max(max_concurrent * 4, 8)
+        for row in df.itertuples(index=False, name=None):
+            active_tasks.add(asyncio.create_task(worker(row)))
+            if len(active_tasks) >= window:
+                _, pending_tasks = await asyncio.wait(active_tasks, return_when=asyncio.FIRST_COMPLETED)
+                active_tasks = set(pending_tasks)
+
+        if active_tasks:
+            await asyncio.gather(*active_tasks, return_exceptions=True)
 
         self.analysis_status.value = "分析完成"
         self.is_analyzing = False
